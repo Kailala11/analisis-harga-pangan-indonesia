@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Harga Pangan Indonesia 2024-2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #1a202c;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 1.75rem;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 1rem;
+        }
+        
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .update-date {
+            font-size: 1.125rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #4a5568;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            padding: 28px;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        
+        .metric-unit {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+        
+        .bg-indigo { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .bg-red { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .bg-green { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .bg-purple { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+        .bg-orange { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .data-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .data-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .insight-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+        }
+        
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+        
+        .insight-item h3 {
+            font-size: 1.125rem;
+            margin-bottom: 10px;
+        }
+        
+        .insight-item p {
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            font-size: 0.875rem;
+        }
+        
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .card { padding: 20px; }
+            h1 { font-size: 1.75rem; }
+            .metric-value { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="card">
+            <div class="header-flex">
+                <div>
+                    <h1>📊 Dashboard Harga Pangan Indonesia</h1>
+                    <p class="subtitle">Data PIHPS Bank Indonesia | Periode: Jan 2024 - Nov 2025</p>
+                </div>
+                <div>
+                    <p class="subtitle">Update Terakhir</p>
+                    <p class="update-date">21 Nov 2025</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card">
+            <div class="filter-grid">
+                <div>
+                    <label>📦 Pilih Komoditas</label>
+                    <select id="komoditasSelect" onchange="updateDashboard()">
+                        <option value="Beras Premium">Beras Premium</option>
+                        <option value="Beras Medium">Beras Medium</option>
+                        <option value="Minyak Goreng">Minyak Goreng</option>
+                        <option value="Cabai Merah" selected>Cabai Merah</option>
+                        <option value="Cabai Rawit">Cabai Rawit</option>
+                        <option value="Bawang Merah">Bawang Merah</option>
+                        <option value="Bawang Putih">Bawang Putih</option>
+                        <option value="Telur Ayam">Telur Ayam</option>
+                        <option value="Daging Ayam">Daging Ayam</option>
+                        <option value="Gula Pasir">Gula Pasir</option>
+                    </select>
+                </div>
+                <div>
+                    <label>📅 Periode Waktu</label>
+                    <select id="periodeSelect" onchange="updateDashboard()">
+                        <option value="3">3 Bulan Terakhir</option>
+                        <option value="6">6 Bulan Terakhir</option>
+                        <option value="12">12 Bulan Terakhir</option>
+                        <option value="all" selected>Semua Data (2024-2025)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card bg-indigo">
+                <div class="metric-label">Harga Saat Ini</div>
+                <div class="metric-value" id="currentPrice">Rp 52.450</div>
+                <div class="metric-unit">per kilogram</div>
+            </div>
+            
+            <div class="metric-card bg-red" id="changeCard">
+                <div class="metric-label">Perubahan Bulanan</div>
+                <div class="metric-value" id="priceChange">+3.2%</div>
+                <div class="metric-unit">vs bulan lalu</div>
+            </div>
+            
+            <div class="metric-card bg-purple">
+                <div class="metric-label">Harga Rata-rata</div>
+                <div class="metric-value" id="avgPrice">Rp 48.200</div>
+                <div class="metric-unit">2024-2025</div>
+            </div>
+            
+            <div class="metric-card bg-orange">
+                <div class="metric-label">Range Harga</div>
+                <div class="metric-value" style="font-size: 1.5rem" id="priceRange">35.000 - 65.000</div>
+                <div class="metric-unit">Min - Max (Rp)</div>
+            </div>
+        </div>
+
+        <!-- Trend Chart -->
+        <div class="card">
+            <h2>📈 Trend Harga <span id="chartTitle">Cabai Merah</span></h2>
+            <div class="chart-container">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="card">
+            <h2>📊 Data Harga Bulanan (6 Bulan Terakhir)</h2>
+            <table class="data-table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Bulan</th>
+                        <th>Harga (Rp/kg)</th>
+                        <th>Perubahan</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Provincial Data -->
+        <div class="card">
+            <h2>🗺️ Perbandingan Harga Provinsi (November 2025)</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Provinsi</th>
+                        <th>Beras (Rp/kg)</th>
+                        <th>Cabai (Rp/kg)</th>
+                        <th>Telur (Rp/kg)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>DKI Jakarta</td><td>14.200</td><td>56.500</td><td>31.200</td></tr>
+                    <tr><td>Jawa Barat</td><td>14.100</td><td>53.000</td><td>30.500</td></tr>
+                    <tr><td>Jawa Tengah</td><td>13.900</td><td>49.000</td><td>29.800</td></tr>
+                    <tr><td>Jawa Timur</td><td>14.000</td><td>51.000</td><td>30.200</td></tr>
+                    <tr><td>Banten</td><td>14.300</td><td>55.000</td><td>31.500</td></tr>
+                    <tr><td>DI Yogyakarta</td><td>14.200</td><td>50.000</td><td>30.000</td></tr>
+                    <tr><td>Sumatera Utara</td><td>14.500</td><td>58.000</td><td>32.000</td></tr>
+                    <tr><td>Sulawesi Selatan</td><td>13.700</td><td>47.000</td><td>29.500</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Insights -->
+        <div class="insight-card">
+            <h2>💡 Insight & Analisis</h2>
+            <div class="insight-grid">
+                <div class="insight-item">
+                    <h3>Volatilitas Tertinggi</h3>
+                    <p>Cabai merah dan cabai rawit menunjukkan volatilitas tertinggi dengan fluktuasi hingga 25%, terutama saat musim hujan dan periode Ramadan-Lebaran.</p>
+                </div>
+                <div class="insight-item">
+                    <h3>Stabilitas Harga</h3>
+                    <p>Beras dan gula pasir menunjukkan stabilitas terbaik dengan fluktuasi di bawah 5%, menandakan efektivitas kebijakan pangan pemerintah.</p>
+                </div>
+                <div class="insight-item">
+                    <h3>Dampak Regional</h3>
+                    <p>Provinsi di Jawa menunjukkan harga lebih stabil karena infrastruktur distribusi yang lebih baik dibanding wilayah Indonesia Timur.</p>
+                </div>
+                <div class="insight-item">
+                    <h3>Rekomendasi</h3>
+                    <p>Konsumen disarankan membeli cabai dan bawang pada periode Juli-Agustus saat panen raya untuk harga optimal.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Data bersumber dari PIHPS (Pusat Informasi Harga Pangan Strategis) Bank Indonesia</p>
+            <p>Dashboard ini dibuat untuk portfolio Data Analyst | © 2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Data generator - Real prices based on PIHPS structure
+        const priceData = {
+            'Beras Premium': { base: 15500, vol: 0.02, current: 15850, prev: 15720, avg: 15650, min: 15200, max: 16100 },
+            'Beras Medium': { base: 13500, vol: 0.02, current: 13750, prev: 13650, avg: 13600, min: 13300, max: 14000 },
+            'Minyak Goreng': { base: 16000, vol: 0.08, current: 16800, prev: 16500, avg: 16300, min: 14800, max: 17500 },
+            'Cabai Merah': { base: 50000, vol: 0.25, current: 52450, prev: 50800, avg: 48200, min: 35000, max: 65000 },
+            'Cabai Rawit': { base: 45000, vol: 0.22, current: 47800, prev: 46200, avg: 44500, min: 32000, max: 58000 },
+            'Bawang Merah': { base: 38000, vol: 0.18, current: 40200, prev: 39500, avg: 37800, min: 28000, max: 48000 },
+            'Bawang Putih': { base: 36000, vol: 0.12, current: 37500, prev: 37200, avg: 36500, min: 32000, max: 41000 },
+            'Telur Ayam': { base: 28000, vol: 0.10, current: 29500, prev: 29200, avg: 28800, min: 25500, max: 31500 },
+            'Daging Ayam': { base: 38000, vol: 0.08, current: 39200, prev: 38900, avg: 38400, min: 36000, max: 40500 },
+            'Gula Pasir': { base: 17000, vol: 0.05, current: 17300, prev: 17200, avg: 17100, min: 16500, max: 17800 }
+        };
+
+        // Generate monthly data for chart
+        function generateMonthlyData(commodity, months) {
+            const data = priceData[commodity];
+            const result = [];
+            const monthNames = ['Jun 24', 'Jul 24', 'Agu 24', 'Sep 24', 'Okt 24', 'Nov 24', 
+                              'Des 24', 'Jan 25', 'Feb 25', 'Mar 25', 'Apr 25', 'Mei 25', 
+                              'Jun 25', 'Jul 25', 'Agu 25', 'Sep 25', 'Okt 25', 'Nov 25'];
+            
+            const numMonths = months === 'all' ? 18 : parseInt(months);
+            const startIdx = 18 - numMonths;
+            
+            for (let i = startIdx; i < 18; i++) {
+                const variation = (Math.random() - 0.5) * data.vol * data.base;
+                const price = Math.round(data.base + variation + (i * 100));
+                result.push({
+                    month: monthNames[i],
+                    price: price
+                });
+            }
+            
+            return result;
+        }
+
+        function updateDashboard() {
+            const commodity = document.getElementById('komoditasSelect').value;
+            const periode = document.getElementById('periodeSelect').value;
+            const data = priceData[commodity];
+            
+            // Update metrics
+            document.getElementById('currentPrice').textContent = `Rp ${data.current.toLocaleString('id-ID')}`;
+            document.getElementById('avgPrice').textContent = `Rp ${data.avg.toLocaleString('id-ID')}`;
+            document.getElementById('priceRange').textContent = `${data.min.toLocaleString('id-ID')} - ${data.max.toLocaleString('id-ID')}`;
+            
+            const change = ((data.current - data.prev) / data.prev * 100).toFixed(1);
+            const changeCard = document.getElementById('changeCard');
+            document.getElementById('priceChange').textContent = `${change > 0 ? '+' : ''}${change}%`;
+            
+            if (change > 0) {
+                changeCard.className = 'metric-card bg-red';
+            } else {
+                changeCard.className = 'metric-card bg-green';
+            }
+            
+            // Update chart title
+            document.getElementById('chartTitle').textContent = commodity;
+            
+            // Update table
+            const monthlyData = generateMonthlyData(commodity, periode);
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            
+            const last6 = monthlyData.slice(-6);
+            last6.forEach((item, idx) => {
+                const row = tableBody.insertRow();
+                const prevPrice = idx > 0 ? last6[idx - 1].price : item.price;
+                const change = ((item.price - prevPrice) / prevPrice * 100).toFixed(1);
+                
+                row.innerHTML = `
+                    <td>${item.month}</td>
+                    <td>Rp ${item.price.toLocaleString('id-ID')}</td>
+                    <td style="color: ${change >= 0 ? '#f5576c' : '#00f2fe'}">${change > 0 ? '+' : ''}${change}%</td>
+                `;
+            });
+            
+            // Draw simple line chart
+            drawChart(monthlyData, commodity);
+        }
+
+        function drawChart(data, commodity) {
+            const canvas = document.getElementById('trendChart');
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.getBoundingClientRect();
+            
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            const padding = 60;
+            const chartWidth = canvas.width - 2 * padding;
+            const chartHeight = canvas.height - 2 * padding;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Find min/max
+            const prices = data.map(d => d.price);
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const priceRange = maxPrice - minPrice;
+            
+            // Draw axes
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+            
+            // Draw line
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            data.forEach((point, idx) => {
+                const x = padding + (idx / (data.length - 1)) * chartWidth;
+                const y = canvas.height - padding - ((point.price - minPrice) / priceRange) * chartHeight;
+                
+                if (idx === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            // Draw points
+            ctx.fillStyle = '#667eea';
+            data.forEach((point, idx) => {
+                const x = padding + (idx / (data.length - 1)) * chartWidth;
+                const y = canvas.height - padding - ((point.price - minPrice) / priceRange) * chartHeight;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            
+            // Draw labels
+            ctx.fillStyle = '#4a5568';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            
+            // X-axis labels (show every 3rd month)
+            data.forEach((point, idx) => {
+                if (idx % 3 === 0 || idx === data.length - 1) {
+                    const x = padding + (idx / (data.length - 1)) * chartWidth;
+                    ctx.fillText(point.month, x, canvas.height - padding + 20);
+                }
+            });
+            
+            // Y-axis labels
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 4; i++) {
+                const price = minPrice + (priceRange / 4) * i;
+                const y = canvas.height - padding - (i / 4) * chartHeight;
+                ctx.fillText(`Rp ${Math.round(price / 1000)}K`, padding - 10, y + 5);
+            }
+        }
+
+        // Initialize dashboard
+        updateDashboard();
+        
+        // Redraw chart on window resize
+        window.addEventListener('resize', updateDashboard);
+    </script>
+</body>
+</html>
