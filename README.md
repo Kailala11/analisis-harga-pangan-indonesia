@@ -201,36 +201,60 @@ Buka file `dashboard.html` di browser atau deploy ke:
 
 ---
 
-##  Visualisasi Utama
+##  Visualisasi & Analisis
+
+Project ini menghasilkan 4 visualisasi utama yang menunjukkan pola harga pangan Indonesia:
 
 ### 1. Trend Harga (Time Series)
-![Trend Harga](visualizations/trend_harga_5_komoditas.png)
+Visualisasi trend harga 5 komoditas utama dari Januari 2024 - November 2025.
 
-**Insight**: 
-- Cabai menunjukkan fluktuasi ekstrem
-- Beras sangat stabil (kebijakan subsidi efektif)
-- Spike jelas terlihat saat Ramadan 2024 & 2025
+**Key Insights:**
+- Cabai merah menunjukkan fluktuasi ekstrem dengan volatilitas 25%
+- Beras sangat stabil (kebijakan subsidi pemerintah efektif)
+- Spike harga jelas terlihat saat periode Ramadan & Lebaran 2024-2025
+- Pola musiman konsisten: harga tertinggi saat musim hujan, terendah saat panen raya
 
 ### 2. Volatilitas Komoditas
-![Volatilitas](visualizations/volatilitas_komoditas.png)
+Perbandingan tingkat volatilitas (Koefisien Variasi) antar komoditas.
 
-**Insight**: 
-- Cabai merah 12x lebih volatile dari beras
-- Hortikultura umumnya lebih volatile dari pangan pokok
+**Key Insights:**
+- Cabai merah 12x lebih volatile dibanding beras (24.8% vs 1.8%)
+- Top 3 volatile: Cabai merah (24.8%), Cabai rawit (21.5%), Bawang merah (17.9%)
+- Hortikultura umumnya lebih volatile dari pangan pokok karena storage life pendek
+- Beras & gula paling stabil karena subsidi dan buffer stock pemerintah
 
 ### 3. Heatmap Korelasi
-![Korelasi](visualizations/korelasi_harga.png)
+Matriks korelasi menunjukkan hubungan pergerakan harga antar komoditas.
 
-**Insight**: 
-- Komoditas sejenis bergerak bersama
-- Beras tidak berkorelasi dengan sayuran (supply chain berbeda)
+**Key Insights:**
+- Korelasi tinggi antar komoditas sejenis: Cabai merah ↔ Cabai rawit (0.89)
+- Beras premium ↔ Beras medium berkorelasi sangat kuat (0.95)
+- Beras tidak berkorelasi dengan sayuran (supply chain & demand driver berbeda)
+- Protein (telur & ayam) berkorelasi sedang (0.72)
 
-### 4. Distribusi Bulanan (Cabai)
-![Box Plot](visualizations/distribusi_cabai_bulanan.png)
+### 4. Distribusi Harga Bulanan (Cabai)
+Box plot menunjukkan distribusi dan variasi harga cabai merah per bulan di 2025.
 
-**Insight**: 
-- Variasi harga terbesar: Desember-Februari (musim hujan)
-- Harga paling stabil: Juli-Agustus (panen raya)
+**Key Insights:**
+- Variasi harga terbesar: Desember-Februari (musim hujan mengganggu supply)
+- Harga paling stabil: Juli-Agustus (periode panen raya)
+- Range harga bisa mencapai 40-50% dalam bulan yang sama
+- Best buying period: Juli-Agustus (harga -30% dari rata-rata)
+
+---
+
+**📈 Dashboard Interaktif**
+
+Seluruh visualisasi tersedia dalam bentuk dashboard interaktif di file `dashboard.html`. 
+Dashboard menyediakan:
+- Filter komoditas & periode waktu
+- Real-time metrics (harga, perubahan, volatilitas)
+- Perbandingan harga antar provinsi
+- Interactive charts dengan tooltip
+
+**Cara akses:**
+1. Buka file `dashboard.html` di browser
+2. Atau akses online: [Live Dashboard URL]
 
 ---
 
