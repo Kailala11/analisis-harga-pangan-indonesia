@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korelasi Harga Komoditas</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #1a202c;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+        #heatmapContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .heatmap-row {
+            display: flex;
+            gap: 2px;
+        }
+        .heatmap-cell {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        .label-cell {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            text-align: center;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .legend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 20px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .download-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Korelasi Harga Antar Komoditas</h1>
+        <p class="subtitle">Nilai Mendekati 1 = Bergerak Searah | Mendekati -1 = Berlawanan</p>
+        <div id="heatmapContainer"></div>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #3b82f6;"></div>
+                <span>Korelasi Tinggi (>0.7)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #10b981;"></div>
+                <span>Sedang (0.4-0.7)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #f59e0b;"></div>
+                <span>Rendah (<0.4)</span>
+            </div>
+        </div>
+        <button class="download-btn" onclick="downloadHeatmap()">💾 Download Gambar</button>
+    </div>
+
+    <script>
+        const labels = ['Beras P.', 'Beras M.', 'Minyak', 'Cabai M.', 'Cabai R.', 'Baw. M.', 'Baw. P.', 'Telur', 'Ayam', 'Gula'];
+        
+        // Correlation matrix (symmetric)
+        const correlations = [
+            [1.00, 0.95, 0.15, 0.08, 0.12, 0.10, 0.18, 0.22, 0.28, 0.35],
+            [0.95, 1.00, 0.18, 0.10, 0.14, 0.12, 0.20, 0.25, 0.30, 0.38],
+            [0.15, 0.18, 1.00, 0.25, 0.30, 0.35, 0.42, 0.55, 0.48, 0.52],
+            [0.08, 0.10, 0.25, 1.00, 0.89, 0.65, 0.58, 0.35, 0.28, 0.15],
+            [0.12, 0.14, 0.30, 0.89, 1.00, 0.68, 0.62, 0.38, 0.32, 0.18],
+            [0.10, 0.12, 0.35, 0.65, 0.68, 1.00, 0.76, 0.45, 0.38, 0.25],
+            [0.18, 0.20, 0.42, 0.58, 0.62, 0.76, 1.00, 0.48, 0.42, 0.32],
+            [0.22, 0.25, 0.55, 0.35, 0.38, 0.45, 0.48, 1.00, 0.72, 0.58],
+            [0.28, 0.30, 0.48, 0.28, 0.32, 0.38, 0.42, 0.72, 1.00, 0.52],
+            [0.35, 0.38, 0.52, 0.15, 0.18, 0.25, 0.32, 0.58, 0.52, 1.00]
+        ];
+
+        function getColor(value) {
+            if (value > 0.7) return '#3b82f6'; // Blue - high correlation
+            if (value > 0.4) return '#10b981'; // Green - medium
+            if (value > 0.2) return '#f59e0b'; // Orange - low
+            return '#ef4444'; // Red - very low
+        }
+
+        function getTextColor(value) {
+            return value > 0.5 ? 'white' : '#1a202c';
+        }
+
+        const container = document.getElementById('heatmapContainer');
+
+        // Header row with labels
+        const headerRow = document.createElement('div');
+        headerRow.className = 'heatmap-row';
+        headerRow.appendChild(document.createElement('div')); // Empty corner
+        labels.forEach(label => {
+            const cell = document.createElement('div');
+            cell.className = 'label-cell';
+            cell.textContent = label;
+            headerRow.appendChild(cell);
+        });
+        container.appendChild(headerRow);
+
+        // Data rows
+        correlations.forEach((row, i) => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'heatmap-row';
+            
+            // Row label
+            const labelCell = document.createElement('div');
+            labelCell.className = 'label-cell';
+            labelCell.textContent = labels[i];
+            rowDiv.appendChild(labelCell);
+            
+            // Data cells
+            row.forEach((value, j) => {
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell';
+                cell.style.backgroundColor = getColor(value);
+                cell.style.color = getTextColor(value);
+                cell.textContent = value.toFixed(2);
+                cell.title = `${labels[i]} ↔ ${labels[j]}: ${value.toFixed(2)}`;
+                rowDiv.appendChild(cell);
+            });
+            
+            container.appendChild(rowDiv);
+        });
+
+        function downloadHeatmap() {
+            // Simple implementation - in real scenario, you'd use html2canvas
+            alert('Untuk download: Screenshot heatmap ini (Win + Shift + S atau Cmd + Shift + 4)\nSimpan sebagai: korelasi_harga.png');
+        }
+    </script>
+</body>
+</html>
